@@ -13,9 +13,9 @@ echo Java Version:
 java -version
 
 echo.
-echo Starting application on port 8080...
-echo API Health: http://localhost:8080/api/auth/health
-echo Login API : POST http://localhost:8080/api/auth/login
+echo Starting application on port 8082...
+echo API Health: http://localhost:8082/api/auth/health
+echo Login API : POST http://localhost:8082/api/auth/login
 echo.
 
 call mvn spring-boot:run
