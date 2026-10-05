@@ -54,6 +54,10 @@ public class User {
     @Builder.Default
     private Boolean enabled = true;
 
+    @Column(name = "must_change_password", nullable = false)
+    @Builder.Default
+    private Boolean mustChangePassword = false;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -102,12 +106,21 @@ public class User {
         }
     }
 
+    public boolean isMustChangePassword() {
+        return Boolean.TRUE.equals(mustChangePassword);
+    }
+
+    public void setMustChangePassword(boolean mustChangePassword) {
+        this.mustChangePassword = mustChangePassword;
+    }
+
     @PrePersist
     protected void onCreate() {
         LocalDateTime now = LocalDateTime.now();
         this.createdAt = now;
         this.updatedAt = now;
         if (this.enabled == null) this.enabled = true;
+        if (this.mustChangePassword == null) this.mustChangePassword = false;
         if (this.sessionTimeout == null) this.sessionTimeout = "15 min";
     }
 
@@ -140,6 +153,12 @@ public class User {
         public UserBuilder active(boolean active) {
             this.enabled$value = active;
             this.enabled$set = true;
+            return this;
+        }
+
+        public UserBuilder mustChangePassword(boolean mustChangePassword) {
+            this.mustChangePassword$value = mustChangePassword;
+            this.mustChangePassword$set = true;
             return this;
         }
     }

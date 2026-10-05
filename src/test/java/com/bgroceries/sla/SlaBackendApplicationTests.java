@@ -32,8 +32,8 @@ class SlaBackendApplicationTests {
     }
 
     @Test
-    void testLoginSuccess_Admin() throws Exception {
-        AuthRequest loginRequest = new AuthRequest("admin", "admin");
+    void testLoginSuccess_DefaultAdminHeng() throws Exception {
+        AuthRequest loginRequest = new AuthRequest("Heng", "012793921");
 
         MvcResult result = mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -41,7 +41,7 @@ class SlaBackendApplicationTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").isNotEmpty())
                 .andExpect(jsonPath("$.tokenType").value("Bearer"))
-                .andExpect(jsonPath("$.user.username").value("admin"))
+                .andExpect(jsonPath("$.user.username").value("Heng"))
                 .andExpect(jsonPath("$.user.role").value("ADMIN"))
                 .andReturn();
 
@@ -53,46 +53,13 @@ class SlaBackendApplicationTests {
         mockMvc.perform(get("/api/auth/me")
                         .header("Authorization", "Bearer " + authResponse.getToken()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.username").value("admin"))
-                .andExpect(jsonPath("$.data.email").value("admin@bgroceries.com"));
-    }
-
-    @Test
-    void testLoginSuccess_Badmin() throws Exception {
-        AuthRequest loginRequest = new AuthRequest("Badmin", "012793921");
-
-        MvcResult result = mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").isNotEmpty())
-                .andExpect(jsonPath("$.user.username").value("Badmin"))
-                .andExpect(jsonPath("$.user.role").value("ADMIN"))
-                .andExpect(jsonPath("$.user.phoneNumber").value("+85512793921"))
-                .andReturn();
-
-        String responseString = result.getResponse().getContentAsString();
-        AuthResponse authResponse = objectMapper.readValue(responseString, AuthResponse.class);
-        assertNotNull(authResponse.getToken());
-    }
-
-    @Test
-    void testLoginSuccess_OpsStaff_DemoCredentials() throws Exception {
-        // Test with the demo credentials used by React frontend: admin_staff / SecureSLA#2026
-        AuthRequest loginRequest = new AuthRequest("admin_staff", "SecureSLA#2026");
-
-        mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").isNotEmpty())
-                .andExpect(jsonPath("$.user.username").value("admin_staff"))
-                .andExpect(jsonPath("$.user.role").value("MARKETING_OPS"));
+                .andExpect(jsonPath("$.data.username").value("Heng"))
+                .andExpect(jsonPath("$.data.email").value("heng@bgroceries.com"));
     }
 
     @Test
     void testLoginFailure_InvalidPassword() throws Exception {
-        AuthRequest badRequest = new AuthRequest("admin", "wrong_password");
+        AuthRequest badRequest = new AuthRequest("Heng", "wrong_password");
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)

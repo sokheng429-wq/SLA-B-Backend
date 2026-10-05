@@ -73,6 +73,7 @@ public class SecurityConfig {
                                 "/api/auth/login",
                                 "/api/auth/register",
                                 "/api/auth/health",
+                                "/api/auth/change-password",
                                 "/api/public/**",
                                 "/error"
                         ).permitAll()

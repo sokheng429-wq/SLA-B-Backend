@@ -3,6 +3,7 @@ package com.bgroceries.sla.controller;
 import com.bgroceries.sla.dto.ApiResponse;
 import com.bgroceries.sla.dto.AuthRequest;
 import com.bgroceries.sla.dto.AuthResponse;
+import com.bgroceries.sla.dto.ChangePasswordRequest;
 import com.bgroceries.sla.dto.RegisterRequest;
 import com.bgroceries.sla.dto.UserDto;
 import com.bgroceries.sla.service.AuthService;
@@ -35,6 +36,23 @@ public class AuthController {
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
         AuthResponse response = authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<AuthResponse> changePassword(
+            @Valid @RequestBody ChangePasswordRequest request,
+            Authentication authentication) {
+        String username = null;
+        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getName())) {
+            username = authentication.getName();
+        } else if (request.getUsername() != null && !request.getUsername().trim().isEmpty()) {
+            username = request.getUsername().trim();
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        AuthResponse response = authService.changePassword(username, request);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/me")

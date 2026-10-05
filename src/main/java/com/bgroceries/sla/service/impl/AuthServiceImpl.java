@@ -2,6 +2,7 @@ package com.bgroceries.sla.service.impl;
 
 import com.bgroceries.sla.dto.AuthRequest;
 import com.bgroceries.sla.dto.AuthResponse;
+import com.bgroceries.sla.dto.ChangePasswordRequest;
 import com.bgroceries.sla.dto.RegisterRequest;
 import com.bgroceries.sla.dto.UserDto;
 import com.bgroceries.sla.entity.Role;
@@ -104,5 +105,31 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with identifier: " + username));
 
         return UserDto.fromEntity(user);
+    }
+
+    @Override
+    @Transactional
+    public AuthResponse changePassword(String username, ChangePasswordRequest request) {
+        if (request.getNewPassword() == null || request.getNewPassword().trim().length() < 6) {
+            throw new BadRequestException("New password must be at least 6 characters long");
+        }
+
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new BadRequestException("New password and confirm password do not match");
+        }
+
+        User user = userRepository.findByUsernameOrEmailIgnoreCase(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
+
+        // Update password and clear mustChangePassword
+        user.setPasswordHash(passwordEncoder.encode(request.getNewPassword().trim()));
+        user.setMustChangePassword(false);
+        User savedUser = userRepository.save(user);
+
+        // Generate fresh JWT token
+        String token = jwtTokenProvider.generateToken(savedUser);
+        long expiresInSeconds = jwtTokenProvider.getExpirationMs() / 1000;
+
+        return new AuthResponse("Password successfully updated", token, expiresInSeconds, UserDto.fromEntity(savedUser));
     }
 }

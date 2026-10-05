@@ -24,6 +24,7 @@ public class UserDto {
     private String department;
     private String sessionTimeout;
     private boolean active;
+    private boolean mustChangePassword;
     private LocalDateTime createdAt;
 
     public static UserDto fromEntity(User user) {
@@ -38,6 +39,7 @@ public class UserDto {
                 .department(user.getDepartment())
                 .sessionTimeout(user.getSessionTimeout())
                 .active(user.isActive())
+                .mustChangePassword(user.isMustChangePassword())
                 .createdAt(user.getCreatedAt())
                 .build();
     }

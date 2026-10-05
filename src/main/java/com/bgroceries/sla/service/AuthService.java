@@ -5,11 +5,15 @@ import com.bgroceries.sla.dto.AuthResponse;
 import com.bgroceries.sla.dto.RegisterRequest;
 import com.bgroceries.sla.dto.UserDto;
 
+import com.bgroceries.sla.dto.ChangePasswordRequest;
+
 public interface AuthService {
 
     AuthResponse login(AuthRequest request);
 
     AuthResponse register(RegisterRequest request);
+
+    AuthResponse changePassword(String username, ChangePasswordRequest request);
 
     UserDto getCurrentUser(String username);
 }
